@@ -72,23 +72,10 @@ interface DeepSeekResponse {
 
 async function searchWithDeepSeek(topic: string) {
   try {
-    // Use DeepSeek web search API - replace with actual DeepSeek MCP integration
-    const searchResponse = await fetch('https://api.deepseek.com/v1/web-search', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query: topic,
-        num_results: 10,
-        search_type: 'comprehensive'
-      })
-    });
-
-    if (!searchResponse.ok) {
-      throw new Error('DeepSeek API request failed');
-    }
+    // Note: DeepSeek doesn't have a web search API endpoint like this
+    // This is a placeholder - in production you'd use their chat API or MCP integration
+    console.log('DeepSeek API not available, using fallback data for:', topic);
+    throw new Error('DeepSeek API not implemented - using fallback');
 
     const searchData: DeepSeekResponse = await searchResponse.json();
     

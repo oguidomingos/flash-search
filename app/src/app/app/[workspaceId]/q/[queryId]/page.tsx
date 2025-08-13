@@ -3,7 +3,7 @@
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface MindMapProps {
   params: Promise<{
@@ -24,21 +24,26 @@ interface Node {
 
 export default function MindMapPage({ params }: MindMapProps) {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-  const resolvedParams = params as unknown as { workspaceId: string; queryId: string };
+  const [resolvedParams, setResolvedParams] = useState<{ workspaceId: string; queryId: string } | null>(null);
 
-  const query = useQuery(api.queries.getQuery, {
-    queryId: resolvedParams.queryId as Id<'queries'>
-  });
+  // Resolve params asynchronously
+  useEffect(() => {
+    params.then(setResolvedParams);
+  }, [params]);
 
-  const nodes = useQuery(api.queries.getNodesByQuery, {
-    queryId: resolvedParams.queryId as Id<'queries'>
-  });
+  const query = useQuery(api.queries.getQuery, 
+    resolvedParams ? { queryId: resolvedParams.queryId as Id<'queries'> } : "skip"
+  );
 
-  const edges = useQuery(api.queries.getEdgesByQuery, {
-    queryId: resolvedParams.queryId as Id<'queries'>
-  });
+  const nodes = useQuery(api.queries.getNodesByQuery, 
+    resolvedParams ? { queryId: resolvedParams.queryId as Id<'queries'> } : "skip"
+  );
 
-  if (!query) {
+  const edges = useQuery(api.queries.getEdgesByQuery, 
+    resolvedParams ? { queryId: resolvedParams.queryId as Id<'queries'> } : "skip"
+  );
+
+  if (!resolvedParams || !query) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
